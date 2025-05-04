@@ -1,0 +1,28 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ollama Chatbot</title>
+</head>
+<body>
+  <h2>Ollama Chatbot</h2>
+  <textarea id="prompt" rows="5" cols="50" placeholder="Ask something..."></textarea><br>
+  <button onclick="ask()">Send</button>
+  <pre id="result"></pre>
+
+  <script>
+    async function ask() {
+      const prompt = document.getElementById('prompt').value;
+      const response = await fetch('http://192.168.0.31:3000/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await response.json();
+      document.getElementById('result').textContent = data.response || 'Error';
+      document.getElementById('prompt').value = '';
+    }
+  </script>
+</body>
+</html>

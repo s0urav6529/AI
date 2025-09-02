@@ -11,29 +11,31 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+openai_api_key = os.getenv("OPENAI_API_KEY")
+mcp_server_script_path = os.getenv("mcp_server_script_path")
+ollama_base_url = os.getenv("ollama_base_url")
+ai_model = os.getenv("ai_model")
+
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY environment variable not set")
+
 async def run_mcp_query(user_input):
-    
-    # Get OpenAI API key from environment variable
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    
-    if not openai_api_key:
-        raise ValueError("OPENAI_API_KEY environment variable not set")
     
     # Initialize the ChatOpenAI model with the API key
     # model = ChatOpenAI(model="gpt-4", temperature=0.7, api_key=openai_api_key)
-    model = ChatOllama(model="gpt-oss:latest", temperature=0.7, base_url="http://localhost:11434")
+    model = ChatOllama(model=ai_model, temperature=0.7, base_url=ollama_base_url)
     
     # Initialize the MultiServerMCPClient with the model
     client = MultiServerMCPClient(
         {
-            "calculator_mcp":{
+            "multi_tool_mcp":{
                 "command": "python",
-                "args": ["C:/Users/SouravMajumder/ai/custom_mcp/calculator_mcp.py"], # path to your MCP server script
+                "args": [mcp_server_script_path], # path to your MCP server script
                 "transport": "stdio", # if server & client are on same machine
-            }
+            },
             
             # if mcp server on remote location
-            # "calculator_mcp":{
+            # "multi_tool_mcp":{
             #     "transport": "streamable-http",
             #     "url": "http://<remote-ip>:<port>",
             # }
@@ -77,8 +79,8 @@ async def run_mcp_query(user_input):
 
 
 def main():
-    st.set_page_config(page_title="Calculator MCP with LangGraph", page_icon="🤖")
-    st.title("Hi i am your Calculator Bot 🤖")
+    st.set_page_config(page_title="MCP with LangGraph", page_icon="🤖")
+    st.title("Hi i am your Multi-MCP Bot 🤖")
     
     user_input = st.text_input("Ask me anything:")
     if st.button("Send") and user_input.strip():

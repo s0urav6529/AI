@@ -1,8 +1,13 @@
 from mcp.server.fastmcp import FastMCP
+from datetime import datetime
 import math
+import pytz
 
-mcp = FastMCP("calculator_mcp")
+# Initialize FastMCP server
+mcp = FastMCP("multi_tool_mcp")
 
+
+# ---------------- Calculator Tools ----------------
 @mcp.tool()
 def add(a: int, b: int) -> int:
     return a + b
@@ -56,6 +61,18 @@ def fibonacci(n: int) -> int:
         a, b = b, add(a, b)
     return a
 
+
+# ---------------- Timezone Tool ----------------
+@mcp.tool()
+def get_time(timezone: str) -> str:
+    """Return current time in given timezone."""
+    try:
+        tz = pytz.timezone(timezone)
+    except Exception:
+        raise ValueError("Invalid timezone. Example: 'Asia/Dhaka'")
+    return datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
+
+
 if __name__ == "__main__":
-    # mcp.run(transport="stdio") # Use stdio transport for local communication
-    mcp.run(transport="streamable-http") # Use streamable-http transport for remote communication
+     mcp.run(transport="stdio") # Use stdio transport for local communication
+    # mcp.run(transport="streamable-http") # Use streamable-http transport for remote communication
